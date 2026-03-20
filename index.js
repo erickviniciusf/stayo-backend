@@ -8,6 +8,8 @@ const stelaRoutes = require('./src/routes/stela.routes');
 const alertasRoutes = require('./src/routes/alertas.routes');
 const politicasRoutes = require('./src/routes/politicas.routes');
 const conciergeRoutes = require('./src/routes/concierge.routes');
+const authRoutes = require('./src/routes/auth.routes');
+const { autenticar } = require('./src/middlewares/auth.middleware');
 const { iniciarJob } = require('./src/jobs/elegibilidade.job');
 
 
@@ -18,13 +20,13 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: false }));
-app.use('/api/hoteis', hoteisRoutes);
-app.use('/api/reservas', reservasRoutes); 
-app.use('/api/sessoes', sessoesRoutes);
-app.use('/api/stela', stelaRoutes);
-app.use('/api/alertas', alertasRoutes);
-app.use('/api/politicas', politicasRoutes);
-app.use('/api/concierge', conciergeRoutes);
+app.use('/api/hoteis', autenticar, hoteisRoutes);
+app.use('/api/reservas', autenticar, reservasRoutes);
+app.use('/api/sessoes', autenticar, sessoesRoutes);
+app.use('/api/alertas', autenticar, alertasRoutes);
+app.use('/api/politicas', autenticar, politicasRoutes);
+app.use('/api/concierge', autenticar, conciergeRoutes);
+app.use('/api/auth', authRoutes);
 app.use((err, req, res, next) => {
   console.error('Erro global:', err);
   res.status(500).json({ erro: err.message });
