@@ -9,6 +9,7 @@ const alertasRoutes = require('./src/routes/alertas.routes');
 const politicasRoutes = require('./src/routes/politicas.routes');
 const conciergeRoutes = require('./src/routes/concierge.routes');
 const authRoutes = require('./src/routes/auth.routes');
+const rateLimit = require('express-rate-limit');
 const { autenticar } = require('./src/middlewares/auth.middleware');
 const { iniciarJob } = require('./src/jobs/elegibilidade.job');
 
@@ -20,6 +21,13 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: false }));
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { erro: 'Muitas requisicoes. Tente novamente em 15 minutos.' }
+});
+
+app.use('/api', limiter);
 app.use('/api/hoteis', autenticar, hoteisRoutes);
 app.use('/api/reservas', autenticar, reservasRoutes);
 app.use('/api/sessoes', autenticar, sessoesRoutes);
