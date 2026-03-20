@@ -1,6 +1,6 @@
 const cron = require('node-cron');
 const db = require('../config/db');
-const { enviarMensagem } = require('../config/twilio');
+const { enviarMensagem, validarNumeroWhatsApp } = require('../config/twilio');
 
 const verificarElegibilidade = async () => {
   console.log('Job de elegibilidade iniciado:', new Date().toLocaleString('pt-BR'));
@@ -30,6 +30,18 @@ const verificarElegibilidade = async () => {
 
     for (const reserva of reservas) {
       try {
+                // Validar numero WhatsApp
+        const numeroValido = await validarNumeroWhatsApp(reserva.hospede_telefone);
+        if (!numeroValido) {
+        console.log(`Numero invalido para ${reserva.hospede_nome} — sessao suspensa.`);
+        await db.query(
+            `INSERT INTO sessoes 
+            (hotel_id, reserva_id, hospede_nome, hospede_telefone, status_sessao)
+            VALUES (?, ?, ?, ?, 'suspensa')`,
+            [reserva.hotel_id, reserva.id, reserva.hospede_nome, reserva.hospede_telefone]
+        );
+        continue;
+        }
         // Criar sessao para a reserva
         const [resultado] = await db.query(
           `INSERT INTO sessoes 
