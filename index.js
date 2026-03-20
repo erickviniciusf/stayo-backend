@@ -8,6 +8,8 @@ const stelaRoutes = require('./src/routes/stela.routes');
 const alertasRoutes = require('./src/routes/alertas.routes');
 const politicasRoutes = require('./src/routes/politicas.routes');
 const conciergeRoutes = require('./src/routes/concierge.routes');
+const { iniciarJob } = require('./src/jobs/elegibilidade.job');
+
 
 dotenv.config();
 
@@ -35,6 +37,7 @@ app.get('/', (req, res) => {
 db.getConnection()
     .then(() => {
         console.log('Banco de dados conectado com sucesso');
+        iniciarJob(); 
         app.listen(PORT, () => {
             console.log(`Servidor rodando na porta ${PORT}`);
         });
