@@ -6,6 +6,8 @@ const reservasRoutes = require('./src/routes/reservas.routes');
 const sessoesRoutes = require('./src/routes/sessoes.routes');
 const stelaRoutes = require('./src/routes/stela.routes');
 const alertasRoutes = require('./src/routes/alertas.routes');
+const politicasRoutes = require('./src/routes/politicas.routes');
+const conciergeRoutes = require('./src/routes/concierge.routes');
 
 dotenv.config();
 
@@ -19,6 +21,8 @@ app.use('/api/reservas', reservasRoutes);
 app.use('/api/sessoes', sessoesRoutes);
 app.use('/api/stela', stelaRoutes);
 app.use('/api/alertas', alertasRoutes);
+app.use('/api/politicas', politicasRoutes);
+app.use('/api/concierge', conciergeRoutes);
 app.use((err, req, res, next) => {
   console.error('Erro global:', err);
   res.status(500).json({ erro: err.message });
