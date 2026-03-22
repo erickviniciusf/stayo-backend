@@ -10,6 +10,7 @@ const politicasRoutes = require('./src/routes/politicas.routes');
 const conciergeRoutes = require('./src/routes/concierge.routes');
 const authRoutes = require('./src/routes/auth.routes');
 const rateLimit = require('express-rate-limit');
+const cors = require('cors');
 const { autenticar } = require('./src/middlewares/auth.middleware');
 const { iniciarJob } = require('./src/jobs/elegibilidade.job');
 
@@ -17,6 +18,11 @@ const { iniciarJob } = require('./src/jobs/elegibilidade.job');
 dotenv.config();
 
 const app =express();
+app.set('trust proxy', 1);
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json()); 
@@ -35,6 +41,7 @@ app.use('/api/alertas', autenticar, alertasRoutes);
 app.use('/api/politicas', autenticar, politicasRoutes);
 app.use('/api/concierge', autenticar, conciergeRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/stela', stelaRoutes);
 app.use((err, req, res, next) => {
   console.error('Erro global:', err);
   res.status(500).json({ erro: err.message });
